@@ -347,7 +347,6 @@ pyenv install 3.12.9
 
 </details>
 
-
 <details>
   <summary>🛠  `zlib` hatası alırsanız</summary>
 
@@ -374,6 +373,27 @@ pyenv install 3.12.9
 `bzip2` ile ilgili hata alırsanız bunu dikkate almayın ve sonraki adımlarla devam edin.
 
 </details>
+
+<details>
+  <summary>🛠 <code>BUILD FAILED</code> hatası alırsanız: </summary>
+
+Bu kodu çalıştırın :
+
+``` bash
+sudo rm -rf /Library/Developer/CommandLineTools
+```
+
+Sonra python yüklemeyi tekrar deneyin:
+
+```bash
+pyenv install 3.12.9
+```
+
+:x: Hala hata almaya devam ediyorsanız slack'te **Data-Yardım** kanalından yardım isteyebilirsiniz.
+
+</details>
+
+
 <br>
 
 Bu adım tamamlandığında bu versiyonu default kullanmak istediğimizi  Python **by default**. This is done with:
