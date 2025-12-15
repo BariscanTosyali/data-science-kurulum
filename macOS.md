@@ -270,6 +270,32 @@ gh auth status
 
 :x: Aksi durumda slack'te **Data-Yardım** kanalından yardım isteyebilirsiniz.
 
+
+## Dotfiles
+
+Bazı uygulamalarımızın configuration dosyalarını değiştirerek özel ayarlarımızı yükleyelim. Bunun için dotfile'ları güncelleyeceğiz.
+
+> Dotfiles, Unix tabanlı işletim sistemlerinde kullanıcıların konfigürasyon ayarlarını saklamaya yarayan gizli dosyalardır.
+
+dotfile'ları yükleyelim:
+
+```bash
+cd ~/code/$GITHUB_USERNAME/data-science-kurulum/dotfiles && zsh install.sh
+```
+
+Şimdi de sanal ortamımız için git ayarlarını güncelleyelim:
+
+```bash
+cd ~/code/$GITHUB_USERNAME/data-science-kurulum/dotfiles && zsh git_setup.sh
+```
+
+☝️ Bu işlem sizden adınızı (**Adınız Soyadınız**) ve e-posta adresinizi isteyecektir.
+
+:x: Aksi durumda slack'te **Data-Yardım** kanalından yardım isteyebilirsiniz.
+
+Şimdi terminal'i quit edelim.
+
+
 ## Python Yükleme ([`pyenv`](https://github.com/pyenv/pyenv) ile )
 
 ### `conda`yı uninstall edin

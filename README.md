@@ -1,6 +1,23 @@
-### Data Science İçin Kurulumlar
+## Data Science İçin Kurulumlar
 
-Önce işletim sisteminizi seçin:
+## Kurulum projesinin forklanması ve clone'lanması
+
+Önce bu projeyi forklayın ve bilgisayarınıza clone'layın.
+
+Projeyi aşağıdaki klasörün içine clone'layın:
+
+```bash
+~/code/$GITHUB_USERNAME/
+```
+
+☝️ clone'ladığınızda klasörün içinde data-science-kurulum klasörü oluşacaktır.
+
+:x: Bu adımda takıldı iseniz slack'te **Data-Yardım** kanalından yardım isteyebilirsiniz.
+
+
+## İşletim sistemine göre kurulumlar:
+
+Sonra işletim sisteminizi seçin:
 
 <table>
   <tr>
