@@ -1,0 +1,183 @@
+require 'open-uri'
+#!/usr/bin/env ruby -wU
+CONSTANTS = {
+  'PYTHON_VERSION' => '3.12.9',
+  'PYTHON_CHECKER_URL' => 'https://raw.githubusercontent.com/workintech/data-science-kurulum/master/checks/python_checker.sh',
+  'PIP_CHECKER_URL' => 'https://raw.githubusercontent.com/workintech/data-science-kurulum/master/checks/pip_check.sh',
+  'PIP_LOADER_URL' => 'https://raw.githubusercontent.com/workintech/data-science-kurulum/master/checks/pip_check.py',
+  'CODE_EDITOR' => 'VS Code',
+  'CODE_EDITOR_CMD' => 'code'
+}
+
+# NOTE: çalışması için başka REPO'ya da ihgtiyaç var. dikkat
+MAC_OS = %w[
+  intro
+  setup/github
+  osx_silicon
+  setup/macos_command_line_tools
+  homebrew
+  setup/macos_vscode
+  vscode_extensions
+  setup/oh_my_zsh
+  direnv
+  setup/gh_cli
+  dotfiles
+  dotfiles_new_student
+  dotfiles_new_laptop
+  dotfiles_merge_upstream
+  dotfiles_same_laptop
+  dotfiles_merge_upstream
+  dotfiles_installer
+  conda_uninstall
+  osx_python
+  virtualenv
+  pip
+  nbextensions
+  python_checkup
+  dbeaver
+  docker
+  gcp_cli_setup
+  gcp_setup
+  gcp_setup_mid
+  gcp_setup_end
+  kitt
+  setup/macos_slack
+  setup/slack_settings
+  setup/macos_settings
+  kata
+].freeze
+
+MAC_OS_KC = %w[
+  keep_current
+  python_checkup
+].freeze
+
+WINDOWS = %w[
+  intro
+  setup/github
+  setup/windows_version
+  setup/windows_virtualization
+  setup/windows_wsl
+  setup/windows_ubuntu
+  setup/windows_vscode
+  setup/windows_terminal
+  vscode_extensions
+  setup/cli_tools
+  setup/oh_my_zsh
+  windows_browser
+  direnv
+  setup/gh_cli
+  ubuntu_gcloud
+  dotfiles
+  dotfiles_new_student
+  dotfiles_new_laptop
+  dotfiles_merge_upstream
+  dotfiles_same_laptop
+  dotfiles_merge_upstream
+  dotfiles_installer
+  setup/ssh_agent
+  conda_uninstall
+  ubuntu_python
+  virtualenv
+  pip
+  nbextensions
+  win_jupyter
+  python_checkup
+  dbeaver
+  setup/windows_settings
+  win_vs_redistributable
+  win_docker
+  gcp_setup
+  gcp_setup_wsl
+  gcp_setup_end
+  kitt
+  setup/windows_slack
+  setup/slack_settings
+  kata
+].freeze
+
+WINDOWS_KC = %w[
+  keep_current
+  python_checkup
+].freeze
+
+LOCALES = [""]  # tr
+
+FILENAMES = {
+  "WINDOWS" => ["WINDOWS", WINDOWS],
+  "macOS" => ["macOS", MAC_OS],
+  "WINDOWS_keep_current" => ["WINDOWS", WINDOWS_KC],
+  "macOS_keep_current" => ["macOS", MAC_OS_KC]
+}
+
+DELIMITERS = {
+  "WINDOWS" => ["\\$WINDOWS_START\n", "\\$WINDOWS_END\n"],
+  "macOS" => ["\\$MAC_START\n", "\\$MAC_END\n"]
+}
+
+def load_partial(partial, locale)
+  match_setup = partial.match(/setup\/(?<partial>[0-9a-z_]+)/)
+  match_de_setup = partial.match(/de_setup\/(?<partial>[0-9a-z_]+)/)
+  if match_de_setup
+    partial = match_de_setup[:partial]
+  elsif match_setup
+    partial = match_setup[:partial]
+  end
+  partial = File.join(locale, partial) unless locale.empty?
+  file = File.join("_partials", "#{partial}.md")
+  if match_de_setup
+    content = URI.open(File.join("https://raw.githubusercontent.com/workintech/data-science-kurulum/main", file))
+            .read
+    # replace data-setup repo relative path by data-engineering-setup repo URL
+    image_paths = content.scan(/\!\[.*\]\((.*)\)/).flatten
+    image_paths.each { |ip| content.gsub!(ip, "https://github.com/workintech/data-science-kurulum/blob/main/#{ip}")}
+    # alternative image format
+    image_paths = content.scan(/src="(images\/.*)"/).flatten
+    image_paths.each { |ip| content.gsub!(ip, "https://github.com/workintech/data-science-kurulum/blob/main/#{ip}")}
+  elsif match_setup
+    content = URI.open(File.join("https://raw.githubusercontent.com/workintech/data-science-kurulum/master", file))
+            .read
+    # replace data-setup repo relative path by setup repo URL
+    image_paths = content.scan(/\!\[.*\]\((.*)\)/).flatten
+    image_paths.each { |ip| content.gsub!(ip, "https://github.com/workintech/data-science-kurulum/blob/master/#{ip}")}
+  else
+    content = File.read(file, encoding: "utf-8")
+  end
+  return content
+end
+
+# load partials
+loaded = FILENAMES.map { |filename, (os_name, partials)| partials }.flatten.uniq
+loaded = loaded.map { |partial| LOCALES.map { |locale| [partial, locale]} }.flatten(1)
+loaded = loaded.map { |partial, locale| ["#{partial}.#{locale}", load_partial(partial, locale)] }.to_h
+
+# write files
+LOCALES.each do |locale|
+  FILENAMES.each do |filename, (os_name, partials)|
+    filename += ".#{locale}" unless locale.empty?
+    filename += ".md"
+    File.open(filename, "w:utf-8") do |f|
+      partials.each do |partial|
+        content = loaded["#{partial}.#{locale}"].clone
+        # remove the OS dependant blocks
+        removed_blocks = DELIMITERS.keys - [os_name]
+        removed_blocks = removed_blocks - ["LINUX"] if os_name == "VM"
+        removed_blocks = removed_blocks - ["VM"] if os_name == "LINUX"
+        removed_blocks.each do |block|
+          delimiter_start, delimiter_end = DELIMITERS[block]
+          pattern = "#{delimiter_start}(.|\n)*?(?<!#{delimiter_end})#{delimiter_end}"
+          content.gsub!(/#{pattern}/, "")
+        end
+        # remove the OS dependant block delimiters
+        DELIMITERS[os_name].each do |delimiter|
+          content.gsub!(/#{delimiter}/, "")
+        end
+        CONSTANTS.each do |placeholder, value|
+          content.gsub!("<#{placeholder}>", value)
+        end
+        f << content
+        f << "\n\n"
+      end
+    end
+  end
+end
