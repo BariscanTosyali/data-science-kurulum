@@ -1,6 +1,6 @@
-## Data Science İçin Kurulumlar
+# Data Science İçin Kurulumlar
 
-## Kurulum projesinin forklanması ve clone'lanması
+## 1- Kurulum projesinin forklanması ve clone'lanması
 
 Önce bu projeyi forklayın ve bilgisayarınıza clone'layın.
 
@@ -15,7 +15,7 @@ Projeyi aşağıdaki klasörün içine clone'layın:
 :x: Bu adımda takıldı iseniz slack'te **Data-Yardım** kanalından yardım isteyebilirsiniz.
 
 
-## İşletim sistemine göre kurulumlar:
+## 2- İşletim sistemine göre kurulumlar:
 
 Sonra işletim sisteminizi seçin:
 
